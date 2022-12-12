@@ -12,47 +12,47 @@ namespace BloggingAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BlogPostsController : ControllerBase
+    public class BlogsController : ControllerBase
     {
         private readonly BloggingAPIContext _context;
 
-        public BlogPostsController(BloggingAPIContext context)
+        public BlogsController(BloggingAPIContext context)
         {
             _context = context;
         }
 
-        // GET: api/BlogPosts
+        // GET: api/Blogs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BlogPost>>> GetBlogPost()
+        public async Task<ActionResult<IEnumerable<Blog>>> GetBlog()
         {
-            return await _context.BlogPost.Include(x=>x.Comments).Include(x=>x.Tags).Include(x=>x.Blog).ToListAsync();
+            return await _context.Blog.ToListAsync();
         }
 
-        // GET: api/BlogPosts/5
+        // GET: api/Blogs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BlogPost>> GetBlogPost(int id)
+        public async Task<ActionResult<Blog>> GetBlog(int id)
         {
-            var blogPost = await _context.BlogPost.Include(x => x.Comments).Include(x => x.Tags).Include(x => x.Blog).FirstOrDefaultAsync(x => x.PostId == id);
+            var blog = await _context.Blog.FindAsync(id);
 
-            if (blogPost == null)
+            if (blog == null)
             {
                 return NotFound();
             }
 
-            return blogPost;
+            return blog;
         }
 
-        // PUT: api/BlogPosts/5
+        // PUT: api/Blogs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBlogPost(int id, BlogPost blogPost)
+        public async Task<IActionResult> PutBlog(int id, Blog blog)
         {
-            if (id != blogPost.PostId)
+            if (id != blog.BlogId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(blogPost).State = EntityState.Modified;
+            _context.Entry(blog).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace BloggingAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BlogPostExists(id))
+                if (!BlogExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace BloggingAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/BlogPosts
+        // POST: api/Blogs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<BlogPost>> PostBlogPost(BlogPost blogPost)
+        public async Task<ActionResult<Blog>> PostBlog(Blog blog)
         {
-            _context.BlogPost.Add(blogPost);
+            _context.Blog.Add(blog);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBlogPost", new { id = blogPost.PostId }, blogPost);
+            return CreatedAtAction("GetBlog", new { id = blog.BlogId }, blog);
         }
 
-        // DELETE: api/BlogPosts/5
+        // DELETE: api/Blogs/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBlogPost(int id)
+        public async Task<IActionResult> DeleteBlog(int id)
         {
-            var blogPost = await _context.BlogPost.FindAsync(id);
-            if (blogPost == null)
+            var blog = await _context.Blog.FindAsync(id);
+            if (blog == null)
             {
                 return NotFound();
             }
 
-            _context.BlogPost.Remove(blogPost);
+            _context.Blog.Remove(blog);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool BlogPostExists(int id)
+        private bool BlogExists(int id)
         {
-            return _context.BlogPost.Any(e => e.PostId == id);
+            return _context.Blog.Any(e => e.BlogId == id);
         }
     }
 }
