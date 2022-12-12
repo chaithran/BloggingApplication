@@ -15,5 +15,9 @@ namespace BloggingAPI.Data
         }
 
         public DbSet<BloggingAPI.Models.User> User { get; set; } = default!;
+
+        public DbSet<BloggingAPI.Models.Comment> Comment { get; set; }
+
+        public DbSet<BloggingAPI.Models.BlogPost> BlogPost { get; set; }
     }
 }

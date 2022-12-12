@@ -12,47 +12,47 @@ namespace BloggingAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class BlogPostsController : ControllerBase
     {
         private readonly BloggingAPIContext _context;
 
-        public UsersController(BloggingAPIContext context)
+        public BlogPostsController(BloggingAPIContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/BlogPosts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<BlogPost>>> GetBlogPost()
         {
-            return await _context.User.ToListAsync();
+            return await _context.BlogPost.Include(x=>x.Comments).Include(x=>x.Tags).Include(x=>x.Blog).ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/BlogPosts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<BlogPost>> GetBlogPost(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var blogPost = await _context.BlogPost.Include(x => x.Comments).Include(x => x.Tags).Include(x => x.Blog).FirstOrDefaultAsync(x => x.PostId == id);
 
-            if (user == null)
+            if (blogPost == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return blogPost;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/BlogPosts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutBlogPost(int id, BlogPost blogPost)
         {
-            if (id != user.UserId)
+            if (id != blogPost.PostId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(blogPost).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace BloggingAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!BlogPostExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace BloggingAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/BlogPosts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<BlogPost>> PostBlogPost(BlogPost blogPost)
         {
-            _context.User.Add(user);
+            _context.BlogPost.Add(blogPost);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.UserId }, user);
+            return CreatedAtAction("GetBlogPost", new { id = blogPost.PostId }, blogPost);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/BlogPosts/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteBlogPost(int id)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var blogPost = await _context.BlogPost.FindAsync(id);
+            if (blogPost == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
+            _context.BlogPost.Remove(blogPost);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(int id)
+        private bool BlogPostExists(int id)
         {
-            return _context.User.Any(e => e.UserId == id);
+            return _context.BlogPost.Any(e => e.PostId == id);
         }
     }
 }

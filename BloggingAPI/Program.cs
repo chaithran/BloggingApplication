@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BloggingAPI.Data;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BloggingAPIContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BloggingAPIContext") ?? throw new InvalidOperationException("Connection string 'BloggingAPIContext' not found.")));
+    options.UseInMemoryDatabase("BloggingApplication"));
 
 // Add services to the container.
 
