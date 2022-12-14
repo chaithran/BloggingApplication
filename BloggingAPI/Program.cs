@@ -5,9 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BloggingAPIContext>(options =>
     options.UseInMemoryDatabase("BloggingApplication"));
 
+builder.Services.AddDistributedMemoryCache();
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddControllersAsServices();
+builder.Services.AddHttpClient();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x=>x.EnableAnnotations());

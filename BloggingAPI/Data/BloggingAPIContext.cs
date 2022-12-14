@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using BloggingAPI.Models;
+using BloggingAPI.Models.DTOs;
 
 namespace BloggingAPI.Data
 {
@@ -18,8 +19,11 @@ namespace BloggingAPI.Data
 
         public DbSet<BloggingAPI.Models.Comment> Comment { get; set; }
 
+        public DbSet<BloggingAPI.Models.Tag> Tag { get; set; }
+
         public DbSet<BloggingAPI.Models.BlogPost> BlogPost { get; set; }
 
         public DbSet<BloggingAPI.Models.Blog> Blog { get; set; }
+
     }
 }

@@ -22,6 +22,29 @@ namespace BloggingAPI.Controllers
             _context = context;
         }
 
+        // GET: api/Comments
+        [HttpGet]
+        [SwaggerOperation("Get List of Comments")]
+
+        public async Task<ActionResult<IEnumerable<Comment>>> GetComment()
+        {
+            return await _context.Comment.ToListAsync();
+        }
+
+        // GET: api/Comments/5
+        [HttpGet("{id}")]
+        private async Task<ActionResult<Comment>> GetComment(int id)
+        {
+            var comment = await _context.Comment.FindAsync(id);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return comment;
+        }
+
         // PUT: api/Comments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -29,11 +52,11 @@ namespace BloggingAPI.Controllers
 
         public async Task<IActionResult> PutComment(int id, Comment comment)
         {
-            if (id != comment.CommentId)
+            if (_context.Comment.Any(e => e.CommentId != id) || _context.BlogPost.Any(e => e.PostId == comment.PostId))
             {
-                return BadRequest();
+                return BadRequest("PostId or CommentId is incorrect");
             }
-
+            comment.CommentId = id;
             _context.Entry(comment).State = EntityState.Modified;
 
             try
@@ -59,8 +82,14 @@ namespace BloggingAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [SwaggerOperation("Insert Comment")]
+
         public async Task<ActionResult<Comment>> PostComment(Comment comment)
         {
+            var post = await _context.BlogPost.FindAsync(comment.PostId);
+            if (post == null)
+            {
+                return NotFound("Blog Post not found or PostID is incorrect");
+            }
             _context.Comment.Add(comment);
             await _context.SaveChangesAsync();
 
